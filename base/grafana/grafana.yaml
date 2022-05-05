@@ -1,0 +1,123 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      serviceAccountName: gd-mon-stack
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+        - name: datasources
+          image: "quay.io/kiwigrid/k8s-sidecar:1.15.6"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: METHOD
+              value: WATCH
+            - name: LABEL
+              value: "grafana_datasource"
+            - name: FOLDER
+              value: "/etc/grafana/provisioning/datasources"
+            - name: RESOURCE
+              value: "both"
+            - name: REQ_USERNAME
+              value: "admin"
+            - name: REQ_PASSWORD
+              value: "password"
+            - name: REQ_URL
+              value: http://localhost:3000/api/admin/provisioning/datasources/reload
+            - name: REQ_METHOD
+              value: POST
+          resources: {}
+          volumeMounts:
+            - name: datasources-volume
+              mountPath: "/etc/grafana/provisioning/datasources"
+        - name: dashboards
+          image: "quay.io/kiwigrid/k8s-sidecar:1.15.6"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: METHOD
+              value: WATCH
+            - name: LABEL
+              value: "grafana_dashboard"
+            - name: FOLDER
+              value: "/tmp/dashboards"
+            - name: RESOURCE
+              value: "both"
+          resources: {}
+          volumeMounts:
+            - name: dashboards-volume
+              mountPath: "/tmp/dashboards"
+        - name: grafana
+          image: grafana/grafana:8.4.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: admin
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: password
+            - name: GF_INSTALL_PLUGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: grafana-config
+                  key: plugins
+          ports:
+            - containerPort: 3000
+              name: http-grafana
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /robots.txt
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 3000
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 250m
+              memory: 750Mi
+          volumeMounts:
+            - name: config
+              mountPath: "/etc/grafana/grafana.ini"
+              subPath: grafana.ini
+            - name: datasources-volume
+              mountPath: "/etc/grafana/provisioning/datasources"
+            - name: dashboards-volume
+              mountPath: "/tmp/dashboards"
+            - name: grafana-dashboards
+              mountPath: "/etc/grafana/provisioning/dashboards/sc-dashboardproviders.yaml"
+              subPath: provider.yaml
+      volumes:
+        - name: config
+          configMap:
+            name: grafana-config
+        - name: datasources-volume
+          emptyDir: {}
+        - name: dashboards-volume
+          emptyDir: {}
+        - name: grafana-dashboards
+          configMap:
+            name: grafana-dashboards

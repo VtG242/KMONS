@@ -1,0 +1,41 @@
+#---
+#apiVersion: v1
+#data:
+#  static-scrape-configs.yaml: IyBrdWJlY3RsIGNyZWF0ZSBzZWNyZXQgZ2VuZXJpYyBhZGRpdGlvbmFsLXNjcmFwZS1jb25maWdzIC0tZnJvbS1maWxlPXN0YXRpYy1zY3JhcGUtY29uZmlncy55YW1sIC0tZHJ5LXJ1bj1jbGllbnQgLW8geWFtbCA+IHN0YXRpYy1zY3JhcGUtY29uZmlncy1zZWNyZXQueWFtbAojIHJlYWQgbWV0cmljIGZyb20gbm9kZV9leHBvcnRlciBydW5uZWQgb24gbWFjCiAtIGpvYl9uYW1lOiBub2RlLWV4cG9ydGVyLW1hYwogICBzdGF0aWNfY29uZmlnczoKICAgIC0gdGFyZ2V0czogWyBob3N0Lm1pbmlrdWJlLmludGVybmFsOjkxMDAgXQo=
+#kind: Secret
+#metadata:
+#  name: additional-scrape-configs
+#  namespace: default
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: main
+  namespace: default
+spec:
+  scrapeInterval: 30s
+  scrapeTimeout: 15s
+  replicas: 1
+  serviceAccountName: prometheus
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector:
+    matchLabels:
+      team: mon
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector:
+    matchLabels:
+      team: mon
+  probeNamespaceSelector: {}
+  probeSelector: {} 
+#  additionalScrapeConfigs:
+#    name: additional-scrape-configs
+#    key: static-scrape-configs.yaml
+  ruleSelector:
+    matchLabels:
+      prometheus: main
+      role: alert-rules
+  alerting:
+    alertmanagers:
+    - namespace: default
+      name: alertmanager
+      port: web

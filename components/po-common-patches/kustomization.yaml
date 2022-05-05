@@ -1,0 +1,53 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+# value of variable defined at overlay(variant) level
+vars:
+- name: PROMETHEUS
+  objref:
+    kind: ConfigMap
+    name: environment-variables
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.PROMETHEUS
+
+configurations:
+  - env-var-transformer.yaml
+
+# name of prometheus and alertmanager instaces are named on the basis of env
+# it's better for future federation - each prometheus will have unique build in external label prometheus: monitoring/minikube
+patches:
+- target:
+    kind: Prometheus
+    name: main
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: $(PROMETHEUS)
+    - op: replace
+      path: /spec/ruleSelector/matchLabels/prometheus
+      value: $(PROMETHEUS)
+- target:
+    kind: PrometheusRule
+    name: prometheus-service-rules
+  patch: |-
+    - op: replace
+      path: /metadata/labels/prometheus
+      value: $(PROMETHEUS)
+- target:
+    kind: ServiceMonitor
+    name: prometheus
+  patch: |-
+    - op: replace
+      path: /spec/selector/matchLabels/prometheus
+      value: $(PROMETHEUS)
+- target:
+    kind: Service
+    name: prometheus
+  patch: |-
+    - op: replace
+      path: /metadata/labels/prometheus
+      value: $(PROMETHEUS)
+    - op: replace
+      path: /spec/selector/prometheus
+      value: $(PROMETHEUS)

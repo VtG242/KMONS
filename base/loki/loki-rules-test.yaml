@@ -1,0 +1,86 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tiger-latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: panther-app
+  namespace: tiger-latest
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: panther-app
+  template:
+    metadata:
+      labels:
+        app: panther-app
+        team: cops
+    spec:
+      containers:
+      - name: panther-app
+        image: fabxc/instrumented_app
+        ports:
+        - name: web
+          containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: panther-app
+  namespace: tiger-latest
+  labels:
+    app: panther-app
+    team: cops
+spec:
+  selector:
+    app: panther-app
+  ports:
+  - name: web
+    port: 8080
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tiger-qa
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: panther-app
+  namespace: tiger-qa
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: panther-app
+  template:
+    metadata:
+      labels:
+        app: panther-app
+        team: cops
+    spec:
+      containers:
+      - name: panther-app
+        image: fabxc/instrumented_app
+        ports:
+        - name: web
+          containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: panther-app
+  namespace: tiger-qa
+  labels:
+    app: panther-app
+    team: cops
+spec:
+  selector:
+    app: panther-app
+  ports:
+  - name: web
+    port: 8080

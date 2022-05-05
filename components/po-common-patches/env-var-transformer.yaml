@@ -1,0 +1,19 @@
+varReference:
+  - kind: Prometheus
+    name: main
+    path: metadata/name
+  - kind: Prometheus
+    name: main
+    path: spec/ruleSelector/matchLabels/prometheus
+  - kind: PrometheusRule
+    name: prometheus-service-rules
+    path: metadata/labels/prometheus
+  - kind: ServiceMonitor
+    name: prometheus
+    path: spec/selector/matchLabels/prometheus
+  - kind: Service
+    name: prometheus
+    path: metadata/labels/prometheus
+  - kind: Service
+    name: prometheus
+    path: spec/selector/prometheus

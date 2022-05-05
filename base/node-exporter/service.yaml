@@ -1,0 +1,15 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: node-exporter
+  namespace: default
+spec:
+  clusterIP: None
+  ports:
+  - name: http-metrics
+    protocol: TCP
+    port: 9100
+    targetPort: http-metrics
+  selector:
+    app: node-exporter

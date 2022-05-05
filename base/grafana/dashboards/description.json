@@ -1,0 +1,61 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "gridPos": {
+        "h": 20,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "content": "# GD monitoring stack\n\nThis serves as a demo of apps for monitoring within kubernetes - installed from: [https://github.com/gooddata/monitoring-tools/tree/master/K8S](https://github.com/gooddata/monitoring-tools/tree/master/K8S)\n\n- loki\n- promtail\n- kube-state-metrics\n- node-exporter\n- blackbox-exporter\n- pushgateway\n- prometheus (managed by prometheus operator)\n- alertmanager (managed by prometheus operator)\n- grafana\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "8.4.4",
+      "title": "GD monitoring stack - description",
+      "type": "text"
+    }
+  ],
+  "schemaVersion": 35,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "GD monitoring stack: Description",
+  "uid": "ZhF7OmU7z",
+  "version": 2,
+  "weekStart": ""
+}

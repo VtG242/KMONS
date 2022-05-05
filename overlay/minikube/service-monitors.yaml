@@ -1,0 +1,20 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: panther-app
+  namespace: default
+  labels:
+    team: mon
+spec:
+  namespaceSelector:
+    matchNames:
+      - tiger-latest
+      - tiger-qa
+  selector:
+    matchLabels:
+      app: panther-app
+  endpoints:
+  - port: web
+  targetLabels:
+    - team

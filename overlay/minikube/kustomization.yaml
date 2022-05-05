@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: monitoring
+
+resources:
+  - dashboard-alertmanager.yaml
+  - service-monitors.yaml
+  - ../../base/
+
+components:
+  - ../../components/po-common-patches
+
+patchesStrategicMerge:
+  - ./patches/alertmanager.yaml
+  - ./patches/prometheus.yaml
+  - ./patches/loki.yaml
+
+secretGenerator:
+- name: alertmanager-main
+  behavior: replace
+  files: 
+    - ./configs/alertmanager.yaml
+  options:
+    disableNameSuffixHash: true
+- name: additional-am-configs
+  behavior: create
+  files:
+    - ./configs/static-am-configs.yaml
+  options:
+    disableNameSuffixHash: true
+- name: additional-scrape-configs
+  behavior: create
+  files:
+    - ./configs/static-scrape-configs.yaml
+  options:
+    disableNameSuffixHash: true
+- name: loki-config
+  behavior: replace
+  files:
+    - ./configs/loki.yaml
+
+# used for expanding variables in configmaps and kustomize compoments
+configMapGenerator:
+- name: environment-variables
+  envs: [environment-properties.env]
+  behavior: replace

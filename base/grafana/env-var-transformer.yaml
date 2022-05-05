@@ -1,0 +1,4 @@
+varReference:
+  - kind: ConfigMap
+    name: grafana-datasources
+    path: data

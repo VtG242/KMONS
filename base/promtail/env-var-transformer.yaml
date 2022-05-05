@@ -1,0 +1,4 @@
+varReference:
+  - kind: ConfigMap
+    name: promtail-config
+    path: data

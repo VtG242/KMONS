@@ -1,0 +1,26 @@
+#---
+#apiVersion: v1
+#data:
+#  alertmanager.yaml: Z2xvYmFsOgpyb3V0ZToKICAjIFdoZW4gYSBuZXcgZ3JvdXAgb2YgYWxlcnRzIGlzIGNyZWF0ZWQgYnkgYW4gaW5jb21pbmcgYWxlcnQsIHdhaXQgYXQKICAjIGxlYXN0ICdncm91cF93YWl0JyB0byBzZW5kIHRoZSBpbml0aWFsIG5vdGlmaWNhdGlvbi4KICAjIFRoaXMgd2F5IGVuc3VyZXMgdGhhdCB5b3UgZ2V0IG11bHRpcGxlIGFsZXJ0cyBmb3IgdGhlIHNhbWUgZ3JvdXAgdGhhdCBzdGFydAogICMgZmlyaW5nIHNob3J0bHkgYWZ0ZXIgYW5vdGhlciBhcmUgYmF0Y2hlZCB0b2dldGhlciBvbiB0aGUgZmlyc3QKICAjIG5vdGlmaWNhdGlvbi4KICBncm91cF93YWl0OiAxMHMKCiAgIyBXaGVuIHRoZSBmaXJzdCBub3RpZmljYXRpb24gd2FzIHNlbnQsIHdhaXQgJ2dyb3VwX2ludGVydmFsJyB0byBzZW5kIGEgYmF0Y2gKICAjIG9mIG5ldyBhbGVydHMgdGhhdCBzdGFydGVkIGZpcmluZyBmb3IgdGhhdCBncm91cC4KICBncm91cF9pbnRlcnZhbDogMzBzCgogICMgSWYgYW4gYWxlcnQgaGFzIHN1Y2Nlc3NmdWxseSBiZWVuIHNlbnQsIHdhaXQgJ3JlcGVhdF9pbnRlcnZhbCcgdG8KICAjIHJlc2VuZCB0aGVtLgogIHJlcGVhdF9pbnRlcnZhbDogMWQKCiAgcmVjZWl2ZXI6ICJudWxsIgogIHJvdXRlczoKICAgIC0gcmVjZWl2ZXI6ICJudWxsIgogICAgICBncm91cF93YWl0OiAxMHMKICAgICAgbWF0Y2hfcmU6CiAgICAgICAgc2V2ZXJpdHk6IG5vbmUKICAgICAgY29udGludWU6IHRydWUKcmVjZWl2ZXJzOgogIC0gbmFtZTogIm51bGwiCg==
+#kind: Secret
+#metadata:
+#  name: alertmanager-main
+#  namespace: default
+#type: Opaque
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  # configuration will be done using alermanager-main secret using alermanager.yaml above
+  name: main
+  namespace: default
+spec:
+  replicas: 1
+#  alertmanagerConfigSelector:
+#    matchLabels:
+#      alertmanagerConfig: example
+#  alertmanagerConfiguration:
+#    name: example
+#  resources:
+#    requests:
+#      memory: 400Mi

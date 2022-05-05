@@ -1,0 +1,149 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: alertmanager
+  namespace: default
+  labels:
+    team: mon
+spec:
+  endpoints:
+  - path: /metrics
+    port: web
+  selector:
+    matchLabels:
+      alertmanager: main
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prometheus
+  namespace: default
+  labels:
+    team: mon
+spec:
+  endpoints:
+  - path: /metrics
+    port: web
+  selector:
+    matchLabels:
+      prometheus: main
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: coredns
+  namespace: default
+  labels:
+    team: mon
+spec:
+  namespaceSelector:
+    matchNames:
+      - kube-system
+  selector:
+    matchLabels:
+      k8s-app: kube-dns
+  endpoints:
+  - port: metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: k8sapiserver
+  namespace: default
+  labels:
+    team: mon
+spec:
+  namespaceSelector:
+    matchNames:
+      - default
+  selector:
+    matchLabels:
+      component: apiserver
+  endpoints:
+  - port: https
+    scheme: https
+    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    tlsConfig:
+      caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      insecureSkipVerify: false
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kube-state-metrics
+  namespace: default
+  labels:
+    team: mon
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics
+  endpoints:
+  - port: http-metrics
+    scheme: http
+    honorLabels: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: loki
+  namespace: default
+  labels:
+    app: loki
+    team: mon
+spec:
+  selector:
+    matchLabels:
+      app: loki
+      variant: headless
+  endpoints:
+  - port: http-metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: promtail
+  namespace: default
+  labels:
+    app: promtail
+    team: mon
+spec:
+  selector:
+    matchLabels:
+      app: promtail
+  endpoints:
+    - port: http-metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: node-exporter
+  namespace: default
+  labels:
+    app: node-exporter
+    team: mon
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  endpoints:
+    - port: http-metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pushgateway
+  namespace: default
+  labels:
+    app: pushgateway
+    team: mon
+spec:
+  endpoints:
+  - port: http
+    path: /metrics
+    honorLabels: true
+  selector:
+    matchLabels:
+      app: pushgateway
+

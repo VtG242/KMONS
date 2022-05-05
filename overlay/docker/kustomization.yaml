@@ -1,0 +1,56 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: monitoring
+
+resources:
+  - dashboard-alertmanager.yaml
+  - service-monitors.yaml
+  - ../../base/
+
+components:
+  - ../../components/po-common-patches
+
+patches:
+# it fails with mountPropagation used
+- target:
+    kind: DaemonSet
+    name: node-exporter
+  patch: |-
+    - op: remove
+      path: /spec/template/spec/containers/0/volumeMounts/0/mountPropagation
+    - op: remove
+      path: /spec/template/spec/containers/0/volumeMounts/1/mountPropagation
+# scraping of kubelet metrics takes long time in docker desktop
+- target:
+    kind: ServiceMonitor
+    name: kubelet
+  patch: |-
+    - op: add
+      path: /spec/endpoints/0/scrapeTimeout
+      value: 55s
+    - op: replace
+      path: /spec/endpoints/0/interval
+      value: 60s
+
+patchesStrategicMerge:
+  - ./patches/prometheus.yaml
+  - ./patches/loki.yaml
+
+secretGenerator:
+- name: alertmanager-main
+  behavior: replace
+  files: 
+    - ./configs/alertmanager.yaml
+  options:
+    disableNameSuffixHash: true
+- name: loki-config
+  behavior: replace
+  files:
+    - ./configs/loki.yaml
+
+# used for expanding variables in configmaps and kustomize compoments
+configMapGenerator:
+- name: environment-variables
+  envs: [environment-properties.env]
+  behavior: replace

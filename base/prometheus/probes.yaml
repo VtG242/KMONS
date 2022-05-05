@@ -1,0 +1,17 @@
+---
+kind: Probe
+apiVersion: monitoring.coreos.com/v1
+metadata:
+  name: test-probe
+  namespace: default
+spec:
+  interval: 60s
+  module: http_2xx
+  prober:
+    url: blackbox-exporter.$(NAMESPACE)
+    scheme: http
+    path: /probe
+  targets:
+    staticConfig:
+      static:
+      - https://gooddata.com

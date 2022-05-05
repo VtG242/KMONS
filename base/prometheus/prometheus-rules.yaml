@@ -1,0 +1,41 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: main
+    role: alert-rules
+  name: prometheus-service-rules
+  namespace: default
+spec:
+  groups:
+  - name: general.rules
+    rules:
+    - alert: AllTargetsDown
+      annotations:
+        description: '{{ $value }}% of {{ $labels.job }} targets are down.'
+        summary: Targets are down
+      expr: 100 * (count(up == 0) BY (job) / count(up) BY (job)) > 10
+      for: 10m
+      labels:
+        severity: warning
+    - alert: DeadMansSwitch
+      annotations:
+        description: This is a DeadMansSwitch meant to ensure that the entire Alerting
+          pipeline is functional.
+        summary: Alerting DeadMansSwitch
+      expr: vector(1)
+      labels:
+        severity: none
+    - alert: InstanceDown
+      # Condition for alerting
+      expr: up == 0
+      for: 30s
+      # Annotation - additional informational labels to store more information
+      annotations:
+        title: 'Instance {{ $labels.instance }} in namespace {{ $labels.namespace }}  down'
+        description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute.'
+      # Labels - additional labels to be attached to the alert
+      labels:
+        severity: 'critical'
+    - record: job:process_cpu_seconds:rate5m
+      expr: sum without(instance)(rate(process_cpu_seconds_total[5m]))

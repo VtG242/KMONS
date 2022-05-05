@@ -1,0 +1,10 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: main
+spec:
+  # enabling cluster mode + configuration of external alert manager
+  forceEnableClusterMode: true
+  additionalPeers:
+    - vtgos.default:9094

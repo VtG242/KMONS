@@ -1,0 +1,4 @@
+varReference:
+  - kind: Probe
+    name: test-probe
+    path: spec/prober/url

@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blackbox-exporter
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blackbox-exporter
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: blackbox-exporter
+    spec:
+      automountServiceAccountToken: false
+      serviceAccountName: blackbox-exporter
+      restartPolicy: Always
+      containers:
+        - name: blackbox-exporter
+          image: "prom/blackbox-exporter:v0.19.0"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+          env:
+          args:
+            - "--config.file=/config/blackbox.yaml"
+          resources:
+            {}
+          ports:
+            - containerPort: 9115
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          volumeMounts:
+            - mountPath: /config
+              name: config
+      hostNetwork: false
+      volumes:
+        - name: config
+          configMap:
+            name: blackbox-config
