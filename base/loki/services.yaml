@@ -25,7 +25,7 @@ metadata:
   labels:
     app: loki
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
     - port: 3100
       protocol: TCP
